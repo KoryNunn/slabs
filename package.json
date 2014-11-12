@@ -1,0 +1,21 @@
+{
+  "name": "slabs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watchexample": "watchify example -o example/index.browser.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crel": "^2.1.5",
+    "doc-js": "^1.1.6",
+    "interact-js": "^2.0.1",
+    "laidout": "^1.0.0",
+    "math-js": "^1.0.0",
+    "unitr": "^1.1.0",
+    "venfix": "^1.1.7"
+  }
+}
