@@ -6,17 +6,36 @@ var doc = require('doc-js'),
     venfix = require('venfix'),
     unitr = require('unitr'),
     laidout = require('laidout'),
+    NE = 45,
+    NW = -45,
+    SE = 135,
+    SW = -135,
     slabs = [];
 
+function isHorizontal(angle){
+    return ((angle > NE && angle < SE) || (angle < NW && angle > SW));
+}
 
 function delegateInteraction(interaction){
+    if(interaction._slabCanceled){
+        return;
+    }
+
     if(interaction._slab){
+        interaction.preventDefault();
         interaction._slab._drag(interaction);
+        return;
+    }
+
+    if(!isHorizontal(interaction.getCurrentAngle(true))){
+        interaction._slabCanceled = true;
+        return;
     }
 
     var target = doc(interaction.target).closest('.slab');
 
     if(target && target.slab){
+        interaction.preventDefault();
         interaction._slab = target.slab;
     }
 }
@@ -29,6 +48,10 @@ function endInteraction(interaction){
 }
 
 function bindEvents(){
+    if(typeof document === 'undefined'){
+        // Not running in a browser.
+        return;
+    }
     interact.on('drag', document, delegateInteraction);
     interact.on('end', document, endInteraction);
     interact.on('cancel', document, endInteraction);
@@ -55,6 +78,10 @@ Slab.prototype.tabs = function(value) {
 
     value = Math.max(value,  0);
 
+    if(value === this._tabs){
+        return;
+    }
+
     this._tabs = value;
     this._update();
 };
@@ -63,7 +90,15 @@ Slab.prototype.tab = function(value) {
         return this._tab;
     }
 
+    if(isNaN(value)){
+        value = 0;
+    }
+
     value = Math.max(Math.min(value, this._tabs), 0);
+
+    if(value === this._tab){
+        return;
+    }
 
     this._targetDistance = this._renderedWidth() * value;
     this._velocity = (this._targetDistance - this._distance)/10;
@@ -79,7 +114,11 @@ Slab.prototype._render = function(element){
     doc(this.element).addClass('slab');
 };
 Slab.prototype._renderedWidth = function(){
-    return this.content.clientWidth;
+    var width = this.content.clientWidth;
+    if(isNaN(width)){
+        width = 0;
+    }
+    return width;
 };
 Slab.prototype._drag = function(interaction){
     this._cancelSettle();
