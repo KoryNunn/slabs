@@ -100,6 +100,7 @@ Slab.prototype.tab = function(value) {
         return;
     }
 
+    this._cancelSettle();
     this._targetDistance = this._renderedWidth() * value;
     this._velocity = (this._targetDistance - this._distance)/10;
     this._settleToTarget();
@@ -124,8 +125,8 @@ Slab.prototype._drag = function(interaction){
     this._cancelSettle();
 
     var xDelta = interaction.getMoveDelta().x;
-    this._distance = Math.max(Math.min(this._distance - xDelta, this._tabs * this._renderedWidth()), 0);
-    this._velocity = interaction.getSpeed() * (xDelta < 0 ? 1 : -1) * 10;
+    this._distance = Math.max(Math.min(this._distance - xDelta, (this._tabs - 1) * this._renderedWidth()), 0);
+    this._velocity = interaction.getSpeed() * (xDelta < 0 ? 1 : -1) * 20;
     this._update();
 };
 Slab.prototype._end = function(interaction){
@@ -143,8 +144,12 @@ Slab.prototype._update = function(){
     }
 };
 Slab.prototype._updateStyle = function(displayPosition){
-    if(this._enabled){
-        this.content.style[venfix('transform')] = 'translate3d(' + unitr(-displayPosition) + ',0,0)';
+    if(!this._enabled){
+        return;
+    }
+
+    for(var i = 0; i < this.content.children.length; i++){
+        this.content.children[i].style[venfix('transform')] = 'translate3d(' + unitr(-displayPosition) + ',0,0)';
     }
 };
 Slab.prototype._direction = function(){
@@ -164,7 +169,7 @@ Slab.prototype._settleToTarget = function() {
 
     var speed = Math.abs(this._velocity);
 
-    this._velocity = Math.min(speed *= 1.2, distanceLeft / 2) * direction;
+    this._velocity = Math.min(speed *= 1.1, distanceLeft) * direction;
 
     this._distance += this._velocity;
 
@@ -192,7 +197,7 @@ Slab.prototype._settle = function(){
 
     var targetDistance = width * (this._tab + (sameTab ? 0 : this._direction()));
 
-    this._targetDistance = Math.max(Math.min(targetDistance, this._tabs * width), 0);
+    this._targetDistance = Math.max(Math.min(targetDistance, (this._tabs - 1) * width), 0);
 
     if(this._direction() < 1 && this._distance <= 0){
         this._velocity = 0;
