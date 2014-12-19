@@ -55,6 +55,11 @@ function bindEvents(){
     interact.on('drag', document, delegateInteraction);
     interact.on('end', document, endInteraction);
     interact.on('cancel', document, endInteraction);
+    window.addEventListener('resize', function(){
+        slabs.forEach(function(slab){
+            slab._resize();
+        });
+    })
 }
 
 bindEvents();
@@ -104,6 +109,10 @@ Slab.prototype.tab = function(value) {
     this._targetDistance = this._renderedWidth() * value;
     this._velocity = (this._targetDistance - this._distance)/10;
     this._settleToTarget();
+};
+Slab.prototype._resize = function() {
+    this._distance = this._renderedWidth() * this._tab;
+    this._updateStyle(this._distance);
 };
 Slab.prototype._render = function(element){
     this.element = element || crel('div',
