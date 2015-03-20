@@ -59,7 +59,7 @@ function bindEvents(){
         slabs.forEach(function(slab){
             slab._resize();
         });
-    })
+    });
 }
 
 bindEvents();
@@ -73,8 +73,17 @@ Slab.prototype.constructor = Slab;
 Slab.prototype._distance = 0;
 Slab.prototype._tabs = 1;
 Slab.prototype._tab = 0;
-Slab.prototype._enabled = 1;
+Slab.prototype._enabled = true;
 Slab.prototype._velocity = 0;
+Slab.prototype.enabled = function(value){
+    if(!arguments.length){
+        return this._enabled;
+    }
+
+    this._enabled = !!value;
+
+    return this;
+};
 
 Slab.prototype.tabs = function(value) {
     if(!arguments.length){
@@ -84,11 +93,13 @@ Slab.prototype.tabs = function(value) {
     value = Math.max(value,  0);
 
     if(value === this._tabs){
-        return;
+        return this;
     }
 
     this._tabs = value;
     this._update();
+
+    return this;
 };
 Slab.prototype.tab = function(value) {
     if(!arguments.length){
@@ -102,13 +113,15 @@ Slab.prototype.tab = function(value) {
     value = Math.max(Math.min(value, this._tabs), 0);
 
     if(value === this._tab){
-        return;
+        return this;
     }
 
     this._cancelSettle();
     this._targetDistance = this._renderedWidth() * value;
     this._velocity = (this._targetDistance - this._distance)/10;
     this._settleToTarget();
+
+    return this;
 };
 Slab.prototype._resize = function() {
     this._distance = this._renderedWidth() * this._tab;
@@ -131,6 +144,10 @@ Slab.prototype._renderedWidth = function(){
     return width;
 };
 Slab.prototype._drag = function(interaction){
+    if(!this._enabled){
+        return;
+    }
+
     this._cancelSettle();
 
     var xDelta = interaction.getMoveDelta().x;
@@ -153,10 +170,6 @@ Slab.prototype._update = function(){
     }
 };
 Slab.prototype._updateStyle = function(displayPosition){
-    if(!this._enabled){
-        return;
-    }
-
     for(var i = 0; i < this.content.children.length; i++){
         this.content.children[i].style[venfix('transform')] = 'translate3d(' + unitr(-displayPosition) + ',0,0)';
     }
