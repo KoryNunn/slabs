@@ -90,6 +90,10 @@ Slab.prototype.tabs = function(value) {
         return this._tabs;
     }
 
+    if(isNaN(value)){
+        value = 0;
+    }
+
     value = Math.max(value,  0);
 
     if(value === this._tabs){
