@@ -164,7 +164,6 @@ Slab.prototype._end = function(interaction){
     this._settle();
 };
 Slab.prototype._update = function(){
-
     var slab = this;
 
     if(slab._distance != slab._lastDistance){
