@@ -149,6 +149,7 @@ Slab.prototype._renderedWidth = function(){
 };
 Slab.prototype._drag = function(interaction){
     if(!this._enabled){
+        this._velocity = 0;
         return;
     }
 
@@ -163,6 +164,7 @@ Slab.prototype._end = function(interaction){
     this._settle();
 };
 Slab.prototype._update = function(){
+
     var slab = this;
 
     if(slab._distance != slab._lastDistance){
