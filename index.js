@@ -149,6 +149,7 @@ Slab.prototype._renderedWidth = function(){
 };
 Slab.prototype._drag = function(interaction){
     if(!this._enabled){
+        this._velocity = 0;
         return;
     }
 
