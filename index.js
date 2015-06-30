@@ -132,13 +132,19 @@ Slab.prototype._resize = function() {
     this._updateStyle(this._distance);
 };
 Slab.prototype._render = function(element){
-    this.element = element || crel('div',
+    this.element = element = element || crel('div',
         crel('div')
     );
 
-    this.content = this.element.childNodes[0];
-    this.element.slab = this;
-    doc(this.element).addClass('slab');
+    this.content = element.childNodes[0];
+    element.slab = this;
+    doc(element)
+        .addClass('slab')
+        .on('focusin focus', function(){
+            requestAnimationFrame(function(){
+                element.scrollLeft = 0;
+            });
+        });
 };
 Slab.prototype._renderedWidth = function(){
     var width = this.content.clientWidth;
@@ -191,6 +197,14 @@ Slab.prototype._settleToTarget = function() {
         this._tab = this._distance / this._renderedWidth();
         this._update();
         this.emit('settle');
+
+        // If the documents active element isn't in the current tab, blur it.
+        if(
+            doc(document.activeElement).closest(this.content) &&
+            !doc(document.activeElement).closest(this.content.children[this.tab()])
+        ){
+            document.activeElement.blur();
+        }
         return;
     }
 
